@@ -5,23 +5,28 @@ import UIKit
 func myPow(a: Int, p: Int) -> Double?{
     
     var result : Double = 1
-    if a <= 0 && p < 0 {
+    if a == 0 && p < 0 {
         return nil
     }
     else if p == 0 {
         return 1
-    }
-    else if a > 0 && p < 0 {
-        for _ in p ..< 0 {
-        result  /= Double(a)}
-    }
-    else {
-        for _ in 0 ..< p {
-            result *= Double(a)
+        
+    var multiplier = Double(a)
+        if p < 0 {
+            multiplier = 1 / multiplier
         }
+        var exponent = abs(p)
+        var res = 1.0
+    
+        while exponent > 0 {
+            if (exponent & 1 != 0) {
+                res *= multiplier;
+            }
+            multiplier *= multiplier;
+            exponent >>= 1;
+        }
+        return res
     }
-return result
-}
 myPow(a: 2, p: -3)
 
 // 2
@@ -44,18 +49,21 @@ print(count)
 
 // 3
 
-var primes = [2]
-
-for num in stride(from: 3, through: 10007, by: 2) {
-    for p in primes {
-        if p * p > num {
-            primes.append(num)
-            break
-        }
-        if num % p == 0 {
-            break
+func sieveOfEratosthenes(from: Int, to n: Int) -> Int {
+    var isprime = [Bool](repeating: true, count: n + 1)
+    let root = Int(sqrt(Double(n))) + 1
+    for i in 2 ... root {
+        if isprime[i] {
+            for k in stride(from: n / i, through: i, by: -1) {
+                if isprime[k] {
+                    isprime[i*k] = false
+                }
+            }
         }
     }
+    var count = 0
+    isprime.enumerated().forEach {
+        count += $0.offset >= from && $0.element ? 1 : 0
+    }
+    return count
 }
-
-print(primes.count)
